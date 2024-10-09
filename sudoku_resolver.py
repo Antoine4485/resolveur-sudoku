@@ -1,10 +1,10 @@
 # On crée un tableau 2D avec, dans chacune des cases, un dictionnaire ayant les clés "chiffre" et "type", le chiffre
-# étant compris entre 1 et 9 et le type ayant la valeur INITIAL_LBL ou NOT_INITIAL_LBL.
+# étant compris entre 1 et 9 et le type ayant la valeur INITIAL_CODE ou NOT_INITIAL_CODE.
 # On balaie ensuite le tableau de haut en bas et de gauche à droite. Dès qu'une case est vide on y met le plus petit
-# chiffre possible, avec un type NOT_INITIAL_LBL.
+# chiffre possible, avec un type NOT_INITIAL_CODE.
 # 1- si on ne peut mettre aucun chiffre entre 1 et 9, on met un 0 et on revient à la première case précédente ayant le
-# type NOT_INITIAL_LBL, dans laquelle on met le plus petit chiffre possible supérieur à celui actuellement dans la case.
-# Si ce n'est pas possible on revient au 1-.
+# type NOT_INITIAL_CODE, dans laquelle on met le plus petit chiffre possible supérieur à celui actuellement dans la
+# case. Si ce n'est pas possible on revient au 1-.
 
 import requests
 from bs4 import BeautifulSoup
@@ -16,8 +16,8 @@ class SudokuResolver:
     CSV_FILE = "sudoku.csv"
     DIGIT_CODE = "digit"
     TYPE_CODE = "type"
-    INITIAL_LBL = "initial"
-    NOT_INITIAL_LBL = "not_initial"
+    INITIAL_CODE = "initial"
+    NOT_INITIAL_CODE = "not_initial"
     DIGIT_MAX_VALUE = 9
     NB_ROWS = DIGIT_MAX_VALUE
     NB_COLUMNS = DIGIT_MAX_VALUE
@@ -53,7 +53,7 @@ class SudokuResolver:
                 digit = str(self.grid[i][j][self.DIGIT_CODE]).replace("0", self.HORIZONTAL_SPACE)
 
                 digit_style = f"{Fore.GREEN}{Style.NORMAL}"
-                if self.grid[i][j][self.TYPE_CODE] == self.INITIAL_LBL:
+                if self.grid[i][j][self.TYPE_CODE] == self.INITIAL_CODE:
                     digit_style = f"{Fore.BLUE}{Style.NORMAL}"
 
                 digit = f"{digit_style}{digit}{Style.RESET_ALL}"
@@ -121,7 +121,7 @@ class SudokuResolver:
                     cell_finded = True
                     continue
 
-                if cell_finded and self.grid[i][j][self.TYPE_CODE] == self.NOT_INITIAL_LBL:
+                if cell_finded and self.grid[i][j][self.TYPE_CODE] == self.NOT_INITIAL_CODE:
                     return i, j
 
         return -1, -1
@@ -131,7 +131,7 @@ class SudokuResolver:
 
         while digit <= self.DIGIT_MAX_VALUE:
             if self.__validate_digit_in_grid(row_id=row_id, column_id=column_id, digit=digit):
-                self.grid[row_id][column_id] = {self.DIGIT_CODE: digit, self.TYPE_CODE: self.NOT_INITIAL_LBL}
+                self.grid[row_id][column_id] = {self.DIGIT_CODE: digit, self.TYPE_CODE: self.NOT_INITIAL_CODE}
                 return True
             digit += 1
 
@@ -141,7 +141,7 @@ class SudokuResolver:
     def __add_digits(self, prev_cell_pos_x: int, prev_cell_pos_y: int) -> tuple:
         for i in range(self.NB_ROWS):
             for j in range(self.NB_COLUMNS):
-                if (self.grid[i][j][self.TYPE_CODE] == self.INITIAL_LBL
+                if (self.grid[i][j][self.TYPE_CODE] == self.INITIAL_CODE
                         or (self.grid[i][j][self.DIGIT_CODE] > 0
                             and prev_cell_pos_x >= 0 and prev_cell_pos_y >= 0
                             and not (i == prev_cell_pos_x and j == prev_cell_pos_y))):
@@ -172,7 +172,7 @@ class SudokuResolver:
                 row = row[0].split(self.CSV_SEP)
                 for j, value in enumerate(row):
                     digit = int(value)
-                    digit_type = self.NOT_INITIAL_LBL if not digit else self.INITIAL_LBL
+                    digit_type = self.NOT_INITIAL_CODE if not digit else self.INITIAL_CODE
                     self.grid[i][j] = {self.DIGIT_CODE: digit, self.TYPE_CODE: digit_type}
 
     def __create_csv(self):
