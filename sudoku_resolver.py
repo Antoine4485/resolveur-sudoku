@@ -1,6 +1,6 @@
-# On crée un tableau 2D avec, dans chacune des cases, un dictionnaire ayant les clés "chiffre" et "type", le chiffre
+# On crée un tableau 2D avec, dans chacune des cases, un dictionnaire avec les clés "chiffre" et "type", le chiffre
 # étant compris entre 1 et 9 et le type ayant la valeur INITIAL_CODE ou NOT_INITIAL_CODE.
-# On balaie ensuite le tableau de haut en bas et de gauche à droite. Dès qu'une case est vide on y met le plus petit
+# On balaie ensuite le tableau de haut en bas et de gauche à droite, et dès qu'une case est vide on y met le plus petit
 # chiffre possible, avec un type NOT_INITIAL_CODE.
 # Si on ne peut mettre aucun chiffre entre 1 et 9, on met un 0 à la place et on revient à la première case précédente
 # ayant le type NOT_INITIAL_CODE, dans laquelle on met le plus petit chiffre possible supérieur à celui actuellement
@@ -75,14 +75,12 @@ class SudokuResolver:
         for j in range(self.NB_COLUMNS):
             if self.grid[row_id][j][self.DIGIT_CODE] == digit:
                 return False
-
         return True
 
     def __validate_column(self, column_id: int, digit: int) -> bool:
         for i in range(self.NB_ROWS):
             if self.grid[i][column_id][self.DIGIT_CODE] == digit:
                 return False
-
         return True
 
     def __validate_square(self, row_id: int, column_id: int, digit: int) -> bool:
@@ -102,7 +100,6 @@ class SudokuResolver:
                 # on ne peut pas remplacer un digit par un digit inférieur
                 or digit <= self.grid[row_id][column_id][self.DIGIT_CODE]):
             return False
-
         return True
 
     def __validate_digit_in_grid(self, row_id: int, column_id: int, digit: int) -> bool:
@@ -111,7 +108,6 @@ class SudokuResolver:
                 or not self.__validate_column(column_id=column_id, digit=digit)
                 or not self.__validate_square(row_id=row_id, column_id=column_id, digit=digit)):
             return False
-
         return True
 
     def __get_prev_cell_pos(self, start_row_id: int, start_col_id: int) -> tuple:
