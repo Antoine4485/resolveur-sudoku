@@ -1,18 +1,15 @@
-# créer un tableau 2D avec, dans chacune des cases, un tableau de 2 éléments(digit, type)
-# où le digit est compris entre 1 et 9, et le type a la valeur INITIAL_LBL ou NOT_INITIAL_LBL
-# remplir les cases de "départ" avec le couple "digit/'initiale'"
-# balayer le tableau de haut en bas et de gauche à droite
-# dès qu'une case est vide on s'y arrête et on y met le plus petit digit possible, avec un type NOT_INITIAL_LBL
-# 1- si on ne peut mettre aucun digit,
-# on revient à la première case précédente NOT_INITIAL_LBL et on y met le plus petit digit possible toujours,
-# mais supérieur à celui actuellement dans la case
-# si pas possible on revient au 1-
+# On crée un tableau 2D avec, dans chacune des cases, un dictionnaire ayant les clés "chiffre" et "type", le chiffre
+# étant compris entre 1 et 9 et le type ayant la valeur INITIAL_LBL ou NOT_INITIAL_LBL.
+# On balaie ensuite le tableau de haut en bas et de gauche à droite. Dès qu'une case est vide on y met le plus petit
+# chiffre possible, avec un type NOT_INITIAL_LBL.
+# 1- si on ne peut mettre aucun chiffre entre 1 et 9, on met un 0 et on revient à la première case précédente ayant le
+# type NOT_INITIAL_LBL, dans laquelle on met le plus petit chiffre possible supérieur à celui actuellement dans la case.
+# Si ce n'est pas possible on revient au 1-.
 
-import random
 import requests
 from bs4 import BeautifulSoup
 import csv
-from colorama import Back, Fore, Style, deinit, init
+from colorama import Fore, Style, deinit, init
 
 
 class SudokuResolver:
@@ -54,10 +51,11 @@ class SudokuResolver:
 
             for j in range(self.NB_COLUMNS):
                 digit = str(self.grid[i][j][self.DIGIT_CODE]).replace("0", self.HORIZONTAL_SPACE)
-                # print(digit)
+
                 digit_style = f"{Fore.GREEN}{Style.NORMAL}"
                 if self.grid[i][j][self.TYPE_CODE] == self.INITIAL_LBL:
                     digit_style = f"{Fore.BLUE}{Style.NORMAL}"
+
                 digit = f"{digit_style}{digit}{Style.RESET_ALL}"
                 vertical_sep_style = f"{Fore.BLACK}{Style.NORMAL}" if j % 3 == 0 else ""
 
@@ -114,22 +112,7 @@ class SudokuResolver:
 
         return True
 
-    def __add_digit(self, row_id: int = 0, column_id: int = 0) -> bool:
-        # print('__add_digit')
-        digit = 1
-
-        while digit <= self.DIGIT_MAX_VALUE:
-            if self.__validate_digit_in_grid(row_id=row_id, column_id=column_id, digit=digit):
-                self.grid[row_id][column_id] = {self.DIGIT_CODE: digit, self.TYPE_CODE: self.NOT_INITIAL_LBL}
-                # afficheGrille(grid)
-                # input()
-                return True
-            digit += 1
-
-        return False
-
-    def __get_prev_cell_pos(self, start_row_id: int, start_col_id: int):
-        # print('getPositionCasePrecedente')
+    def __get_prev_cell_pos(self, start_row_id: int, start_col_id: int) -> tuple:
         cell_finded = False
 
         for i in range(self.NB_ROWS - 1, -1, -1):
@@ -143,43 +126,42 @@ class SudokuResolver:
 
         return -1, -1
 
+    def __add_digit(self, row_id: int = 0, column_id: int = 0) -> bool:
+        digit = self.grid[row_id][column_id][self.DIGIT_CODE]
+
+        while digit <= self.DIGIT_MAX_VALUE:
+            if self.__validate_digit_in_grid(row_id=row_id, column_id=column_id, digit=digit):
+                self.grid[row_id][column_id] = {self.DIGIT_CODE: digit, self.TYPE_CODE: self.NOT_INITIAL_LBL}
+                return True
+            digit += 1
+
+        self.grid[row_id][column_id][self.DIGIT_CODE] = 0
+        return False
+
+    def __add_digits(self, prev_cell_pos_x: int, prev_cell_pos_y: int) -> tuple:
+        for i in range(self.NB_ROWS):
+            for j in range(self.NB_COLUMNS):
+                if (self.grid[i][j][self.TYPE_CODE] == self.INITIAL_LBL
+                        or (self.grid[i][j][self.DIGIT_CODE] > 0
+                            and prev_cell_pos_x >= 0 and prev_cell_pos_y >= 0
+                            and not (i == prev_cell_pos_x and j == prev_cell_pos_y))):
+                    continue
+
+                if not self.__add_digit(i, j):
+                    prev_cell_pos = self.__get_prev_cell_pos(i, j)
+                    return prev_cell_pos
+
+        return -1, -1
+
     def __resolve(self):
         prev_cell_pos_x, prev_cell_pos_y = -1, -1
-        # NB_TRIES = 0
-        # while True and NB_TRIES < 1000:
+
         while True:
-            # print(f'resoudreSudoku A: {prev_cell_pos_x} {prev_cell_pos_y}')
-            # NB_TRIES += 1
-            flag = False
+            prev_cell_pos_x, prev_cell_pos_y = self.__add_digits(prev_cell_pos_x=prev_cell_pos_x,
+                                                                 prev_cell_pos_y=prev_cell_pos_y)
+            if prev_cell_pos_x == - 1 and prev_cell_pos_y - 1:
+                break
 
-            for i in range(self.NB_ROWS):
-                for j in range(self.NB_COLUMNS):
-                    if (self.grid[i][j][self.TYPE_CODE] == self.INITIAL_LBL
-                            # s'il y a un chiffre sur la case et qu'il y a par ailleurs une case à modifier,
-                            # si cette case à modifier se situe après la case en cours, on passe à la suivante
-                            or (self.grid[i][j][self.DIGIT_CODE] > 0
-                                and prev_cell_pos_x >= 0 and prev_cell_pos_y >= 0
-                                and not (i == prev_cell_pos_x and j == prev_cell_pos_y))):
-                        continue
-
-                    # print(f'resoudreSudoku: {i} {j}')
-                    if not self.__add_digit(i, j):
-                        self.grid[i][j][self.DIGIT_CODE] = 0
-                        prev_cell_pos_x, prev_cell_pos_y = self.__get_prev_cell_pos(i, j)
-                        # print(f'resoudreSudoku B: {prev_cell_pos_x} {prev_cell_pos_y}')
-                        flag = True
-                        break
-
-                if flag:
-                    break
-            if flag:
-                continue
-
-            prev_cell_pos_x, prev_cell_pos_y = -1, -1
-            if i == self.NB_ROWS - 1 and j == self.NB_COLUMNS - 1:
-                break  # programme terminé
-
-    # remplissage en mémoire de la grille de jeu à partir du fichier csv
     def __init_grid(self):
         self.grid = [[{} for _ in range(self.NB_COLUMNS)] for _ in range(self.NB_ROWS)]
 
