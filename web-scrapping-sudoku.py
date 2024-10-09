@@ -11,7 +11,7 @@ soup = BeautifulSoup(response.content, "html.parser")
 soup.prettify()
 liste_td = soup.find_all('td', attrs={'class': 'gridGame-cell'})
 
-with open('liste_chiffres.csv', 'w', newline='') as liste_chiffres_csv:
+with open('sudoku.csv', 'w', newline='') as liste_chiffres_csv:
     writer = csv.writer(liste_chiffres_csv)
     for i in range(len(liste_td)):
         span = liste_td[i].find('span', attrs={'gridGame-start'})
