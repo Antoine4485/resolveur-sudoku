@@ -42,8 +42,6 @@ class SudokuResolver:
         self.__show_grid()
 
     def __show_grid(self) -> None:
-        # on ne peut pas utiliser la méthode "join()" pour alimenter la variable "draw" à cause des différents styles
-        # utilisés
         init()  # sous windows (pour Colorama)
         draw = self.CARRIAGE_RETURN
 
@@ -69,7 +67,7 @@ class SudokuResolver:
         draw += f"{Fore.BLACK}{Style.NORMAL}{self.HORIZONTAL_SEP_LINE}{Style.RESET_ALL}"
 
         print(draw)
-        deinit()  # sous windows (pour Colorama)
+        deinit()
 
     def __validate_row(self, row_id: int, digit: int) -> bool:
         for j in range(self.NB_COLUMNS):
