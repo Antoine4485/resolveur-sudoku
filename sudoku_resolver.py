@@ -1,12 +1,12 @@
-# On crée un tableau 2D avec, dans chacune des cases, un dictionnaire avec les clés "chiffre" et "type", le chiffre
-# étant compris entre 1 et 9 et le type ayant la valeur INITIAL_CODE ou NOT_INITIAL_CODE.
-# On balaie ensuite le tableau de haut en bas et de gauche à droite, et dès qu'une case est vide on y met le plus petit
-# chiffre possible, avec un type NOT_INITIAL_CODE.
-# Si on ne peut mettre aucun chiffre entre 1 et 9, on met un 0 à la place et on revient à la première case précédente
-# ayant le type NOT_INITIAL_CODE, dans laquelle on met le plus petit chiffre possible supérieur à celui actuellement
-# dans la case. Si ce n'est pas possible, on met un 0 dans cette case-là également, on va à la case précédente et ainsi
-# de suite jusqu'à ce qu'une valeur soit acceptée dans une case. A ce moment-là on reprend le balayage normal de haut
-# en bas et de gauche à droite.
+"""On crée un tableau 2D avec, dans chacune des cases, un dictionnaire avec les clés "chiffre" et "type",
+le chiffre étant compris entre 1 et 9 et le type ayant la valeur INITIAL_CODE ou NOT_INITIAL_CODE.
+On balaie ensuite le tableau de haut en bas et de gauche à droite, et dès qu'une case est vide on y met le plus petit
+chiffre possible, avec un type NOT_INITIAL_CODE.
+Si on ne peut mettre aucun chiffre entre 1 et 9, on met un 0 à la place et on revient à la première case précédente
+ayant le type NOT_INITIAL_CODE, dans laquelle on met le plus petit chiffre possible supérieur à celui actuellement
+dans la case. Si ce n'est pas possible, on met un 0 dans cette case-là également, on va à la case précédente et ainsi
+de suite jusqu'à ce qu'une valeur soit acceptée dans une case. A ce moment-là on reprend le balayage normal de haut
+en bas et de gauche à droite."""
 
 import requests
 from bs4 import BeautifulSoup
@@ -199,4 +199,4 @@ class SudokuResolver:
 
 
 if __name__ == '__main__':
-    SudokuResolver(create_csv=False)
+    SudokuResolver(create_csv=True)
